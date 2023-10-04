@@ -7,11 +7,13 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   return (
-    <main className={`flex min-h-screen flex-col p-24 ${inter.className} `}>
-      <div>hi</div>
-      <div>
+    <main
+      className={`flex  min-h-screen flex-col px-24 py-8 ${inter.className} `}
+    >
+      <nav className="flex flex-row justify-between">
+        <p>FundMe</p>
         <ThemeSwitch />
-      </div>
+      </nav>
     </main>
   );
 }
