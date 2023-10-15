@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang="en">
       <Head />
       <body className="w-full grid place-content-center">
-        <main className="max-w-screen-2xl min-w-[1280px]">
+        <main className="max-w-screen-2xl md:min-w-[1280px] min-w-[200px]">
           <Main />
         </main>
         <NextScript />
