@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ThemeSwitch from "./theme-switcher";
 import { HiMenu } from "react-icons/hi";
+import { BiSolidWallet } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import { useState } from "react";
 import { useSDK } from "@metamask/sdk-react";
@@ -8,6 +9,7 @@ import { useSDK } from "@metamask/sdk-react";
 const Navbar = () => {
   const [menu, setMenu] = useState(false);
   const [account, setAccount] = useState<string>();
+  const [balance, setBalance] = useState("");
   const {
     sdk,
     connected,
@@ -16,16 +18,16 @@ const Navbar = () => {
     chainId,
     status,
     ready,
-    balance,
+    balance: walletBalance,
   } = useSDK();
   const menuOptions = [
     {
       name: "Discover",
-      link: "/",
+      link: "/discover",
     },
     {
       name: "Create Fundraiser",
-      link: "/",
+      link: "/create-fundraiser",
     },
     {
       name: "How It Works",
@@ -35,7 +37,9 @@ const Navbar = () => {
   const connect = async () => {
     try {
       const accounts = await sdk?.connect();
-      setAccount(accounts?.[0]);
+      // setAccount(accounts?.[0]);
+      setBalance(String(walletBalance));
+      console.log(status);
     } catch (err) {
       console.warn(`failed to connect..`, err);
     }
@@ -71,7 +75,9 @@ const Navbar = () => {
             </p>
           )}
           {ready && !connected && (
-            <p className="w-[4ch] overflow-hidden">Connect Wallet</p>
+            <p className="">
+              <BiSolidWallet size={22} />
+            </p>
           )}
         </button>
       </div>
@@ -115,6 +121,7 @@ const Navbar = () => {
           {chainId && `Connected chain: ${chainId}`}
           <p></p>
           {account && `Connected account: ${account}`}
+          {balance && `Balance: ${balance}`}
         </>
       </div>
     </nav>

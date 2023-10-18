@@ -1,34 +1,54 @@
+import Link from "next/link";
 import React from "react";
 
-const CampaignCard = () => {
+const CampaignCard = ({
+  id,
+  title,
+  account,
+  progress,
+  backers,
+  status,
+  image,
+}: {
+  id: number;
+  title: string;
+  account: string;
+  progress: string;
+  backers: number;
+  status: boolean;
+  image: string;
+}) => {
   return (
-    <div id="projects" className="rounded-lg shadow-lg  bg-white w-64 m-4">
-      <img
-        src="data:image/png;base64,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"
-        alt="project title"
-        className="rounded-xl h-64 w-full object-cover  transition-opacity opacity-0 duration-[2s]"
-      />
+    <Link
+      href={`/discover/${id}`}
+      className="rounded-md  p-4 border-2 border-muted hover:cursor-pointer hover:bg-secondary"
+    >
+      <img src={image} alt="project title" className="rounded-md" />
       <div className="p-4 flex  flex-col">
-        <h5>Creating a household robot</h5>
+        <h5>{title}</h5>
 
         <div className="flex  justify-between items-center mb-3">
-          <small className="text-gray-700">0x15...lea2</small>
+          <small className="text-gray-700">{account}</small>
         </div>
-        <small>2 days left</small>
+        <small>2 day left</small>
       </div>
-      <div className="w-full bg-gray-300">
+      <div className="w-full bg-muted">
         <div
-          className="bg-green-600 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-l-full h-1"
-          style={{ width: "50%" }}
+          className="bg-primary text-xs font-medium  text-center  rounded-md h-1"
+          style={{ width: progress }}
         ></div>
       </div>
       <div className="flex justify-between items-center flex-wrap mt-4 mb-2 text-gray-500">
-        <small className=" font-bold">{14}Backers</small>
+        <small className=" font-bold">{backers} Backers</small>
         <div>
-          <small className="text-green-500">Open</small>
+          {status ? (
+            <small className="text-green-500">Open</small>
+          ) : (
+            <small className="text-red-500">Closed</small>
+          )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

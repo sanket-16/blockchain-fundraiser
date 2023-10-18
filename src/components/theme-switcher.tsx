@@ -39,7 +39,7 @@ const ThemeSwitch = () => {
         {theme === themes[2].name && themes[2].icon}
       </button>
       {menu && (
-        <div className="fixed rounded-md p-2 border border-muted ">
+        <div className="fixed rounded-md p-2 border border-muted bg-background">
           {themes.map((theme) => (
             <button
               key={theme.name}
