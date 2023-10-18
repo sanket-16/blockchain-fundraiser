@@ -24,7 +24,9 @@ const profile = () => {
         </div>
         <div className="flex items-center flex-col pt-4">
           <div>
-            <p className="font-bold text-lg">Account ID : 5677</p>
+            <p className="font-bold text-lg">
+              Account ID : 0xA49277A27...87C64D6A10A3
+            </p>
             <p className="pt-2">Balance : 9,000</p>
           </div>
         </div>
@@ -46,8 +48,15 @@ const ProfileTabs = () => {
           <button
             key={index}
             onClick={() => setTab(tabVal)}
+<<<<<<< HEAD
             className={`${tabVal === tab && "border-t-2 py-10  font-bold text-foreground"
               }`}
+=======
+            className={`${
+              tabVal === tab &&
+              "border-t-2 border-primary  py-10  font-bold text-foreground"
+            }`}
+>>>>>>> 26d7beadc7a29966d9ac7a4e32b8fbf64f73ba1d
           >
             {tabVal}
           </button>
