@@ -48,15 +48,10 @@ const ProfileTabs = () => {
           <button
             key={index}
             onClick={() => setTab(tabVal)}
-<<<<<<< HEAD
-            className={`${tabVal === tab && "border-t-2 py-10  font-bold text-foreground"
-              }`}
-=======
             className={`${
               tabVal === tab &&
               "border-t-2 border-primary  py-10  font-bold text-foreground"
             }`}
->>>>>>> 26d7beadc7a29966d9ac7a4e32b8fbf64f73ba1d
           >
             {tabVal}
           </button>
@@ -106,12 +101,26 @@ const ProfileTabs = () => {
         </div>}
         {/* for the wishlist detail */}
         {tab === tabs[1] && <div>
-          <CampaignCard/>
-            </div>}
-          {/* for the my campaign detail */}
+          <CampaignCard id={1}
+            title="Help for isarel"
+            account="0xA49277A2786131c46a8ee7998cD787C64D6A10A3"
+            progress="34%"
+            backers={24}
+            status={true}
+            image=
+            "https://media.istockphoto.com/id/1369394082/photo/israel.webp?b=1&s=170667a&w=0&k=20&c=3OVSZ9gVAh-r8hGAqSPoNAzPWvT4thYHvDA_kf2JvHw=" />
+        </div>}
+        {/* for the my campaign detail */}
         {tab === tabs[2] && <div>
-          <CampaignCard/>
-          </div>}
+          <CampaignCard id={1}
+            title="Help for isarel"
+            account="0xA49277A2786131c46a8ee7998cD787C64D6A10A3"
+            progress="34%"
+            backers={24}
+            status={true}
+            image=
+            "https://media.istockphoto.com/id/1369394082/photo/israel.webp?b=1&s=170667a&w=0&k=20&c=3OVSZ9gVAh-r8hGAqSPoNAzPWvT4thYHvDA_kf2JvHw=" />
+        </div>}
       </div>
     </div>
   );
