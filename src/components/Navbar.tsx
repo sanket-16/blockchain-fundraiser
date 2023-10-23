@@ -4,22 +4,15 @@ import { HiMenu } from "react-icons/hi";
 import { BiSolidWallet } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import { useState } from "react";
-import { useSDK } from "@metamask/sdk-react";
+import { useDisconnect } from "wagmi";
+import { useSession } from "next-auth/react";
 
 const Navbar = () => {
   const [menu, setMenu] = useState(false);
-  const [account, setAccount] = useState<string>();
-  const [balance, setBalance] = useState("");
-  const {
-    sdk,
-    connected,
-    connecting,
-    provider,
-    chainId,
-    status,
-    ready,
-    balance: walletBalance,
-  } = useSDK();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
+  const { disconnect } = useDisconnect();
+
   const menuOptions = [
     {
       name: "Discover",
@@ -34,16 +27,6 @@ const Navbar = () => {
       link: "/",
     },
   ];
-  const connect = async () => {
-    try {
-      const accounts = await sdk?.connect();
-      // setAccount(accounts?.[0]);
-      setBalance(String(walletBalance));
-      console.log(status);
-    } catch (err) {
-      console.warn(`failed to connect..`, err);
-    }
-  };
 
   return (
     <nav className="grid place-items-center pb-4 pt-4 w-full ">
@@ -65,21 +48,22 @@ const Navbar = () => {
           </div>
         </div>
         <ThemeSwitch />
-        <button
-          className="border border-muted p-4 rounded-md hover:bg-secondary hover:cursor-pointer"
-          onClick={() => connect()}
-        >
-          {connected && (
-            <p>
-              {account?.slice(0, 6)}...{account?.slice(-6)}
-            </p>
-          )}
-          {ready && !connected && (
+        {!session && (
+          <Link
+            href="/siwe"
+            className="border border-muted p-4 rounded-md hover:bg-secondary hover:cursor-pointer"
+          >
             <p className="">
               <BiSolidWallet size={22} />
             </p>
-          )}
-        </button>
+          </Link>
+        )}
+        {session && (
+          <div>
+            Connected to {session.user?.wallet_id}
+            <button onClick={() => disconnect()}>Disconnect</button>
+          </div>
+        )}
       </div>
       <div className="lg:hidden flex flex-row justify-between items-center gap-20 w-[80vw]">
         <Link className="text-lg font-bold" href="/">
@@ -118,10 +102,10 @@ const Navbar = () => {
       </div>
       <div className="w-full">
         <>
-          {chainId && `Connected chain: ${chainId}`}
+          {/* {chainId && `Connected chain: ${chainId}`}
           <p></p>
           {account && `Connected account: ${account}`}
-          {balance && `Balance: ${balance}`}
+          {balance && `Balance: ${balance}`} */}
         </>
       </div>
     </nav>

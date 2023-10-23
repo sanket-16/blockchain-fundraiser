@@ -2,23 +2,27 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
-import { MetaMaskProvider } from "@metamask/sdk-react";
+import { SessionProvider } from "next-auth/react";
+import { WagmiConfig, createConfig, mainnet, sepolia } from "wagmi";
+import { createPublicClient, http } from "viem";
+
+const config = createConfig({
+  autoConnect: true,
+  publicClient: createPublicClient({
+    chain: sepolia,
+    transport: http(),
+  }),
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider attribute="class">
-      <MetaMaskProvider
-        debug={false}
-        sdkOptions={{
-          logging: {
-            developerMode: false,
-          },
-          checkInstallationImmediately: false, // This will automatically connect to MetaMask on page load
-        }}
-      >
-        <Navbar />
-        <Component {...pageProps} />
-      </MetaMaskProvider>
+      <WagmiConfig config={config}>
+        <SessionProvider session={pageProps.session} refetchInterval={0}>
+          <Navbar />
+          <Component {...pageProps} />
+        </SessionProvider>
+      </WagmiConfig>
     </ThemeProvider>
   );
 }
