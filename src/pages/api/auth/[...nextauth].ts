@@ -78,8 +78,6 @@ export default async function auth(req: any, res: any) {
     secret: String(process.env.NEXTAUTH_SECRET),
     callbacks: {
       async session({ session, token }: { session: any; token: any }) {
-        console.log("token", token);
-        // session.user.wallet_id = token.user.wallet_id;
         const user = await prisma.user.findUnique({
           where: {
             id: token.sub,
@@ -95,14 +93,6 @@ export default async function auth(req: any, res: any) {
       },
 
       async jwt({ token, user }: { token: any; user: any }) {
-        // console.log("jwt Token:", token);
-        // token.user = {
-        //   id: user.id,
-        //   name: user.name,
-        //   wallet_id: user.wallet_id,
-        // };
-        // console.log("jwt User:", user);
-        // console.log("jwt Token:", user);
         return token;
       },
     },

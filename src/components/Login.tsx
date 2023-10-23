@@ -1,10 +1,16 @@
 import { getCsrfToken, signIn, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
-import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useNetwork,
+  useSignMessage,
+} from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { useEffect, useState } from "react";
 
-function Siwe() {
+function Login() {
   const { signMessageAsync } = useSignMessage();
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
@@ -15,7 +21,6 @@ function Siwe() {
 
   const handleLogin = async () => {
     try {
-      const callbackUrl = "/protected";
       const message = new SiweMessage({
         domain: window.location.host,
         address: address,
@@ -32,7 +37,6 @@ function Siwe() {
         message: JSON.stringify(message),
         redirect: false,
         signature,
-        callbackUrl,
       });
     } catch (error) {
       window.alert(error);
@@ -48,8 +52,11 @@ function Siwe() {
 
   return (
     <button
+      className="border border-muted  rounded-md p-4 hover:cursor-pointer hover:bg-secondary"
       onClick={(e) => {
         e.preventDefault();
+        if (session) {
+        }
         if (!isConnected) {
           connect();
         } else {
@@ -58,9 +65,10 @@ function Siwe() {
       }}
     >
       {status === "unauthenticated" && "Sign-in"}
-      {status === "authenticated" && session.user.id}
-      {status === "authenticated" && session.user.name}
-      {status === "authenticated" && session.user.wallet_id}
+      {status === "authenticated" &&
+        session.user.wallet_id.slice(0, 10) +
+          "..." +
+          session?.user.wallet_id.slice(-10, -1)}
     </button>
   );
 }
@@ -73,4 +81,4 @@ export async function getServerSideProps(context: any) {
   };
 }
 
-export default Siwe;
+export default Login;

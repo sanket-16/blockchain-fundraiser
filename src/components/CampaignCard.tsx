@@ -39,7 +39,7 @@ const CampaignCard = ({
         ></div>
       </div>
       <div className="flex justify-between items-center flex-wrap mt-4 mb-2 text-gray-500">
-        <small className=" font-bold">{backers} Backers</small>
+        <small className=" font-bold">{backers} donations</small>
         <div>
           {status ? (
             <small className="text-green-500">Open</small>

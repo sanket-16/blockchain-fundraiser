@@ -6,6 +6,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useState } from "react";
 import { useDisconnect } from "wagmi";
 import { useSession } from "next-auth/react";
+import Login from "./Login";
 
 const Navbar = () => {
   const [menu, setMenu] = useState(false);
@@ -48,22 +49,7 @@ const Navbar = () => {
           </div>
         </div>
         <ThemeSwitch />
-        {!session && (
-          <Link
-            href="/siwe"
-            className="border border-muted p-4 rounded-md hover:bg-secondary hover:cursor-pointer"
-          >
-            <p className="">
-              <BiSolidWallet size={22} />
-            </p>
-          </Link>
-        )}
-        {session && (
-          <div>
-            Connected to {session.user?.wallet_id}
-            <button onClick={() => disconnect()}>Disconnect</button>
-          </div>
-        )}
+        <Login />
       </div>
       <div className="lg:hidden flex flex-row justify-between items-center gap-20 w-[80vw]">
         <Link className="text-lg font-bold" href="/">
@@ -72,7 +58,7 @@ const Navbar = () => {
         <div className="flex gap-2 items-center ">
           <ThemeSwitch />
           <button
-            className="border border-muted p-4"
+            className="border border-muted p-4 rounded-md"
             onClick={() => setMenu((val) => !val)}
           >
             <HiMenu size={24} />
