@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
@@ -62,14 +62,7 @@ export default async function auth(req: any, res: any) {
     }),
   ];
 
-  const isDefaultSigninPage =
-    req.method === "GET" && req.query.nextauth.includes("signin");
-
-  if (isDefaultSigninPage) {
-    providers.pop();
-  }
-
-  return await NextAuth(req, res, {
+  const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers,
     session: {
@@ -96,5 +89,13 @@ export default async function auth(req: any, res: any) {
         return token;
       },
     },
-  });
+  };
+  const isDefaultSigninPage =
+    req.method === "GET" && req.query.nextauth.includes("signin");
+
+  if (isDefaultSigninPage) {
+    providers.pop();
+  }
+
+  return await NextAuth(req, res, authOptions);
 }

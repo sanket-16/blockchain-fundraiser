@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { BiFilterAlt } from "react-icons/bi";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { useState } from 'react';
+import { BiFilterAlt } from 'react-icons/bi';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
 const categories = [
-  "Environment",
-  "Businesses",
-  "Community",
-  "Family",
-  "Sports",
-  "Events",
-  "Others",
+  'Environment',
+  'Businesses',
+  'Community',
+  'Family',
+  'Sports',
+  'Events',
+  'Others',
 ];
 const FilterNav = () => {
   const [menu, setMenu] = useState<boolean>(false);

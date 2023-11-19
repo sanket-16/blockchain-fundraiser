@@ -3,15 +3,34 @@ import { ThemeProvider } from "next-themes";
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
-import { WagmiConfig, createConfig, mainnet, sepolia } from "wagmi";
+import {
+  WagmiConfig,
+  configureChains,
+  createConfig,
+  mainnet,
+  sepolia,
+} from "wagmi";
+import { hardhat } from "wagmi/chains";
 import { createPublicClient, http } from "viem";
+import { JsonRpcProvider } from "ethers";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { publicProvider } from "wagmi/providers/public";
+
+const { chains, publicClient } = configureChains([hardhat], [publicProvider()]);
 
 const config = createConfig({
+  connectors: [
+    new InjectedConnector({ chains }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        projectId: "...",
+      },
+    }),
+  ],
   autoConnect: true,
-  publicClient: createPublicClient({
-    chain: sepolia,
-    transport: http(),
-  }),
+  publicClient,
 });
 
 export default function App({ Component, pageProps }: AppProps) {

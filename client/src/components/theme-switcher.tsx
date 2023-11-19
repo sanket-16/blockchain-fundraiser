@@ -31,7 +31,7 @@ const ThemeSwitch = () => {
   return (
     <div>
       <button
-        className="rounded-md p-4 focus:border-foreground border border-muted m-2 hover:bg-secondary"
+        className="rounded-md p-4 focus:border-foreground border-2 border-muted m-2 hover:bg-secondary"
         onClick={() => setMenu((val) => !val)}
       >
         {theme === themes[0].name && themes[0].icon}

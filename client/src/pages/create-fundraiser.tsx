@@ -1,7 +1,7 @@
 const CreateFundraiser = () => {
   return (
     <div>
-      <p className="font-semibold text-xl py-8">Add Project</p>
+      <p className="font-semibold text-xl py-8">Create Campaign</p>
       <form className="flex flex-col gap-4 transition-all">
         <input
           className=" p-4 border border-muted rounded-md bg-transparent"
@@ -50,7 +50,7 @@ const CreateFundraiser = () => {
           type="submit"
           className=" p-4 rounded-md bg-secondary hover:bg-transparent border border-muted"
         >
-          Submit Project
+          Add Campaign
         </button>
       </form>
     </div>

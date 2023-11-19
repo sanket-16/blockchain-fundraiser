@@ -1,0 +1,17 @@
+{
+  "name": "fundme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "localchain": "npx hardhat node",
+    "deploy": "npx hardhat run --network localhost scripts/deploy.ts"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.1"
+  }
+}
