@@ -16,11 +16,12 @@ const Profile = () => {
       <div className="grid grid-cols-2 gap-1">
         <div className="w-full flex justify-center">
           <div>
-            <img
+            {/* <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJapEe9b-WgzEDHpQSp6SCrdVHS32o35c_2g&usqp=CAU"
               alt="pfp"
               className="block rounded-full h-36 w-36"
-            />
+            /> */}
+            <div className="h-36 w-36 rounded-full bg-gradient-to-br from-red-500 to-blue-500"></div>
           </div>
         </div>
         <div className="cols-span-2 pt-5 grid grid-cols-3 text-center">
@@ -131,7 +132,7 @@ const ProfileTabs = () => {
         {/* for the wishlist detail */}
         {tab === tabs[1] && (
           <div className="grid grid-cols-3">
-            <CampaignCard
+            {/* <CampaignCard
               id={1}
               title="Help for isarel"
               account="0xA49277A2786131c46a8ee7998cD787C64D6A10A3"
@@ -139,13 +140,13 @@ const ProfileTabs = () => {
               backers={24}
               status={true}
               image="https://media.istockphoto.com/id/1369394082/photo/israel.webp?b=1&s=170667a&w=0&k=20&c=3OVSZ9gVAh-r8hGAqSPoNAzPWvT4thYHvDA_kf2JvHw="
-            />
+        />*/}
           </div>
         )}
         {/* for the my campaign detail */}
         {tab === tabs[2] && (
           <div className="grid grid-cols-3">
-            <CampaignCard
+            {/* <CampaignCard
               id={1}
               title="Help for isarel"
               account="0xA49277A2786131c46a8ee7998cD787C64D6A10A3"
@@ -153,7 +154,7 @@ const ProfileTabs = () => {
               backers={24}
               status={true}
               image="https://media.istockphoto.com/id/1369394082/photo/israel.webp?b=1&s=170667a&w=0&k=20&c=3OVSZ9gVAh-r8hGAqSPoNAzPWvT4thYHvDA_kf2JvHw="
-            />
+            />*/}
           </div>
         )}
       </div>

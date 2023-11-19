@@ -87,16 +87,18 @@ function Login() {
         ></button>
       )}
       {menu && (
-        <div className="w-48 bg-background absolute z-10 right-0 top-16 border border-muted p-2 rounded-md">
+        <div className="w-48 bg-background absolute z-10 right-0 top-16 border border-2 border-muted p-2 rounded-md">
           <Link
             href={"/profile"}
             className="hover:bg-secondary rounded-md p-4 w-full text-start flex items-center gap-4"
+            onClick={() => setMenu(false)}
           >
             <IoIosPerson size={25} /> Profile
           </Link>
           <button
             className="hover:bg-secondary rounded-md p-4 w-full text-start flex items-center gap-4"
             onClick={(e) => {
+              setMenu(false);
               e.preventDefault();
               if (session) {
                 if (isConnected) {

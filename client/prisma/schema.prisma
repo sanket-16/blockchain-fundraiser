@@ -65,6 +65,7 @@ model Campaign {
   id               String     @id() @default(uuid())
   title            String
   description      String
+  images           String[]
   category         Category
   Location         String
   total_amount     Int

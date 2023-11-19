@@ -16,6 +16,9 @@ import { JsonRpcProvider } from "ethers";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { publicProvider } from "wagmi/providers/public";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 const { chains, publicClient } = configureChains([hardhat], [publicProvider()]);
 
@@ -35,13 +38,15 @@ const config = createConfig({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider attribute="class">
-      <WagmiConfig config={config}>
-        <SessionProvider session={pageProps.session} refetchInterval={0}>
-          <Navbar />
-          <Component {...pageProps} />
-        </SessionProvider>
-      </WagmiConfig>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class">
+        <WagmiConfig config={config}>
+          <SessionProvider session={pageProps.session} refetchInterval={0}>
+            <Navbar />
+            <Component {...pageProps} />
+          </SessionProvider>
+        </WagmiConfig>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
