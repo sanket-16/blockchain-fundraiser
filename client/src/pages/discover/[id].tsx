@@ -2,12 +2,17 @@ import React from "react";
 import { useRouter } from "next/router";
 import { TbMessageCircleHeart } from "react-icons/tb";
 import { BsDot } from "react-icons/bs";
+import usePopup from "@/components/Popup";
 
 const CampaignPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const { Popup, open, setOpen } = usePopup();
   return (
     <div className="py-8">
+      <Popup>
+        <p>Hi</p>
+      </Popup>
       <h3 className="text-3xl font-bold py-8">Help for Isarel</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <img
@@ -31,7 +36,10 @@ const CampaignPage = () => {
           <button className="p-4 bg-secondary rounded-md hover:bg-background border border-muted transition-all">
             Donate Now
           </button>
-          <button className="p-4 hover:bg-secondary rounded-md bg-background border border-muted transition-all">
+          <button
+            className="p-4 hover:bg-secondary rounded-md bg-background border border-muted transition-all"
+            onClick={() => setOpen((prevVal) => !prevVal)}
+          >
             Share
           </button>
           <div className="flex w-full p-4 gap-4">

@@ -1,7 +1,7 @@
-import Navbar from "@/components/Navbar";
 import { contractABI, contractAddress } from "@/lib/contract";
 import { useSession } from "next-auth/react";
 import { Inter } from "next/font/google";
+import Head from "next/head";
 import { useState } from "react";
 import { useContractRead, useContractWrite, useWalletClient } from "wagmi";
 

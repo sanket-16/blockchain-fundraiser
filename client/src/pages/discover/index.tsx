@@ -15,7 +15,7 @@ const CampaignPage = () => {
   if (status === "loading") return "loading....";
   if (status === "error" || data === undefined) return "Something went wrong.";
   return (
-    <div className="p-8">
+    <div className=" max-w-6xlp-8">
       <FilterNav />
       <div className="grid md:grid-cols-3 grid-cols-1 gap-4 py-4">
         {data.campaigns.map((campaign, index) => (

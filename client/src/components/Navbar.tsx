@@ -81,6 +81,9 @@ const Navbar = () => {
                     {option.name}
                   </Link>
                 ))}
+                <div className="p-4 w-full hover:bg-secondary rounded-md">
+                  <Login />
+                </div>
               </div>
             </div>
           )}

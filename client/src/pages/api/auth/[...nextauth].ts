@@ -7,9 +7,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 
 const prisma = new PrismaClient();
 
-// For more information on each option (and a full list of options) go to
-// https://next-auth.js.org/configuration/options
-export default async function auth(req: any, res: any) {
+export const getNextAuthOptions = (req: any) => {
   const providers = [
     CredentialsProvider({
       name: "Ethereum",
@@ -90,6 +88,11 @@ export default async function auth(req: any, res: any) {
       },
     },
   };
+  return { authOptions, providers };
+};
+
+export default async function auth(req: any, res: any) {
+  const { authOptions, providers } = getNextAuthOptions(req);
   const isDefaultSigninPage =
     req.method === "GET" && req.query.nextauth.includes("signin");
 

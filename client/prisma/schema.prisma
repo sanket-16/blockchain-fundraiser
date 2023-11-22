@@ -16,6 +16,13 @@ enum Category {
   Community
 }
 
+enum Status {
+  Complete
+  Waiting
+  Approved
+  Rejected
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -66,6 +73,7 @@ model Campaign {
   title            String
   description      String
   images           String[]
+  status           Status     @default(Waiting)
   category         Category
   Location         String
   total_amount     Int

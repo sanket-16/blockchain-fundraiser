@@ -65,8 +65,8 @@ function Login() {
       {status === "unauthenticated" && (
         <button
           className={` ${
-            status === "unauthenticated" && `border-2 `
-          } border-muted  rounded-md p-4 hover:cursor-pointer hover:bg-secondary`}
+            status === "unauthenticated" && `md:border-2 `
+          } border-muted  rounded-md md:p-4 hover:cursor-pointer hover:bg-secondary`}
           onClick={(e) => {
             e.preventDefault();
 
@@ -77,17 +77,20 @@ function Login() {
             }
           }}
         >
-          Sign-in
+          Sign In
         </button>
       )}
       {status === "authenticated" && (
         <button
-          className="h-10 w-10 rounded-full bg-gradient-to-br from-red-500 to-blue-500"
           onClick={() => setMenu((prevValue) => !prevValue)}
-        ></button>
+          className="flex gap-2 items-center"
+        >
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-red-500 to-blue-500"></div>
+          <p className="md:hidden">{address}</p>
+        </button>
       )}
       {menu && (
-        <div className="w-48 bg-background absolute z-10 right-0 top-16 border border-2 border-muted p-2 rounded-md">
+        <div className="md:w-48 w-full  bg-background absolute  z-50 md:right-0 md:top-16 top-16  border-2 border-muted p-2 rounded-md">
           <Link
             href={"/profile"}
             className="hover:bg-secondary rounded-md p-4 w-full text-start flex items-center gap-4"
