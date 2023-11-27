@@ -56,6 +56,8 @@ export default async function handler(
       },
     },
   });
+  prisma.$disconnect();
+
   if (!campaign) {
     throw new Error("Campaign not found.");
   }

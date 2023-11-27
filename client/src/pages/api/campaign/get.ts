@@ -45,5 +45,7 @@ export default async function handler(
       },
     },
   });
+  prisma.$disconnect();
+
   res.status(200).json({ campaigns });
 }

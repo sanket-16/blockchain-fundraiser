@@ -82,6 +82,8 @@ export default async function handler(
       },
     },
   });
+  prisma.$disconnect();
+
   if (user) {
     res.status(200).json({ user });
   } else {

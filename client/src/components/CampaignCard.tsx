@@ -35,17 +35,17 @@ const CampaignCard = ({
       <div className="w-full bg-muted">
         <div
           className="bg-primary text-xs font-medium  text-center  rounded-md h-1"
-          style={{ width: `${completed_amount / total_amount}%` }}
+          style={{ width: `${(completed_amount / total_amount) * 100}%` }}
         ></div>
       </div>
       <div className="flex justify-between items-center flex-wrap mt-4 mb-2 text-gray-500">
         <small className=" font-bold">{_count.donations} donations</small>
         <div>
-          {date <= end_date ? (
-            <small className="text-green-500">Open</small>
-          ) : (
-            <small className="text-red-500">Closed</small>
-          )}
+          {/* {date >= end_date ? ( */}
+          <small className="text-green-500">Open</small>
+          {/* ) : (
+             <small className="text-red-500">Closed</small>
+           )} */}
         </div>
       </div>
     </Link>

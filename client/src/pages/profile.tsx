@@ -129,7 +129,7 @@ const ProfileTabs = ({ user }: User) => {
                               <td className="whitespace-nowrap px-6 py-4 font-medium">
                                 {index + 1}
                               </td>
-                              <td className="whitespace-nowrap px-6 py-4">
+                              <td className="whitespace-nowrap px-6 py-4 text-ellipsis">
                                 {donation.transaction_hash}
                               </td>
                               <td className="whitespace-nowrap px-6 py-4">

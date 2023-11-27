@@ -35,6 +35,8 @@ export default async function handler(
       },
     },
   });
+  prisma.$disconnect();
+
   if (campaign) {
     res.status(200).json({ message: "Campaign created successfully." });
   } else {
