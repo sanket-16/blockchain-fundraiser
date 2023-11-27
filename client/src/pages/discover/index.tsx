@@ -1,24 +1,31 @@
 import { useState } from "react";
-
+import { useQuery } from "react-query";
 import FilterNav from "@/components/FilterNav";
 import Card from "@/components/CampaignCard";
-import { useQuery } from "react-query";
 import getAllCampaigns from "@/lib/api/campaigns/getAll";
 
 const CampaignPage = () => {
-  const { data, status, isLoading } = useQuery({
+  const { data, status } = useQuery({
     queryKey: ["get campaigns"],
     queryFn: () => getAllCampaigns(),
   });
   console.log(data);
 
-  if (status === "loading") return "loading....";
-  if (status === "error" || data === undefined) return "Something went wrong.";
   return (
-    <div className=" max-w-6xlp-8">
+    <div className=" max-w-6xl p-8">
       <FilterNav />
       <div className="grid md:grid-cols-3 grid-cols-1 gap-4 py-4">
-        {data.campaigns.map((campaign, index) => (
+        {status === "error" && <p>Something went wrong, Please try again!</p>}
+        {status === "loading" && (
+          <>
+            <div className="w-full h-80 animate-pulse bg-secondary rounded-md" />
+            <div className="w-full h-80 animate-pulse bg-secondary rounded-md" />
+            <div className="w-full h-80 animate-pulse bg-secondary rounded-md" />
+            <div className="w-full h-80 animate-pulse bg-secondary rounded-md" />
+            <div className="w-full h-80 animate-pulse bg-secondary rounded-md" />
+          </>
+        )}
+        {data?.campaigns.map((campaign, index) => (
           <Card key={campaign.id} {...campaign} />
         ))}
       </div>

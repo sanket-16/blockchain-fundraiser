@@ -30,12 +30,12 @@ const CampaignCard = ({
         <div className="flex  justify-between items-center mb-3">
           <small className="text-gray-700">{User.wallet_id}</small>
         </div>
-        <small>Ends in {dayjs(date).to(dayjs(end_date))}</small>
+        <small>Ends {dayjs(date).to(dayjs(end_date))}</small>
       </div>
       <div className="w-full bg-muted">
         <div
           className="bg-primary text-xs font-medium  text-center  rounded-md h-1"
-          style={{ width: completed_amount / total_amount }}
+          style={{ width: `${completed_amount / total_amount}%` }}
         ></div>
       </div>
       <div className="flex justify-between items-center flex-wrap mt-4 mb-2 text-gray-500">

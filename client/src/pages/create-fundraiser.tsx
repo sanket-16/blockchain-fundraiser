@@ -1,23 +1,53 @@
-import createCampaign from "@/lib/api/campaigns/create";
 import { useState } from "react";
 import { useMutation } from "react-query";
-import { UploadDropzone } from "@/lib/uploadThingButton";
+import { Category } from "@prisma/client";
+import { RxCross2 } from "react-icons/rx";
 import { MdDelete } from "react-icons/md";
+import createCampaign from "@/lib/api/campaigns/create";
+import { UploadDropzone } from "@/lib/uploadThingButton";
+import usePopup from "@/components/Popup";
+import toast from "react-hot-toast";
+
+function getEnumKeys<
+  T extends string,
+  TEnumValue extends string | number
+>(enumVariable: { [key in T]: TEnumValue }) {
+  return Object.keys(enumVariable) as Array<T>;
+}
+const categories = getEnumKeys(Category);
 
 const CreateFundraiser = () => {
+  let toastId: string;
   const [title, setTitle] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
   const [amount, setAmount] = useState<number>(0);
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [menu, setMenu] = useState<boolean>(false);
+  const { Popup, open, setOpen } = usePopup();
+
   const mutate = useMutation({
     mutationKey: ["create fundraiser"],
     mutationFn: () =>
-      createCampaign({ title, amount, date, description, images: images }),
+      createCampaign({
+        title,
+        amount,
+        date,
+        description,
+        images: images,
+        location,
+        category,
+      }),
     onError: (err) => {
+      toast.remove("campaign_creation");
+      toast.error("Campaign Creation failed!");
       console.log(err);
     },
     onSuccess: (data) => {
+      toast.remove("campaign_creation");
+      toast.success("Campaign created successfully!");
       console.log(data);
     },
   });
@@ -26,12 +56,13 @@ const CreateFundraiser = () => {
     <div>
       <p className="font-semibold text-xl py-8">Create Campaign</p>
       <form
-        className="flex flex-col gap-4 transition-all"
+        className="flex flex-col gap-4 transition-all my-8"
         onSubmit={(event) => {
           event.preventDefault();
-          mutate.mutateAsync();
+          setOpen(true);
         }}
       >
+        <label htmlFor="">Title</label>
         <input
           className=" p-4 border border-muted rounded-md bg-transparent"
           type="text"
@@ -41,19 +72,28 @@ const CreateFundraiser = () => {
           onChange={(event) => setTitle(event.target.value)}
           value={title}
         />
-
+        <label htmlFor="">Description</label>
+        <textarea
+          className="p-4 border border-muted rounded-md bg-transparent"
+          name="description"
+          placeholder="Description"
+          required
+          onChange={(event) => setDescription(event.target.value)}
+          value={description}
+        />
+        <label htmlFor="">Amount</label>
         <input
           className=" p-4 border border-muted rounded-md bg-transparent"
           type="number"
-          step={0.01}
-          min={0.01}
+          step={1}
+          min={1}
           name="amount"
           placeholder="Amount (ETH)"
           required
           onChange={(event) => setAmount(Number(event.target.value))}
           value={amount}
         />
-
+        <label htmlFor="">End Date</label>
         <input
           className=" p-4 border border-muted rounded-md bg-transparent"
           type="date"
@@ -63,61 +103,142 @@ const CreateFundraiser = () => {
           onChange={(event) => setDate(event.target.value)}
           value={date}
         />
-        {images.length !== 0 && (
-          <div>
-            <p>Uploaded Images:</p>
-            <div className="grid md:grid-cols-6 grid-cols-2 gap-4">
-              {images.map((image, index) => (
+        <label htmlFor="">Location</label>
+        <input
+          className=" p-4 border border-muted rounded-md bg-transparent"
+          type="text"
+          name="location"
+          placeholder="Location"
+          required
+          onChange={(event) => setLocation(event.target.value)}
+          value={location}
+        />
+        <label htmlFor="">Category</label>
+        <input
+          className=" p-4 border border-muted rounded-md bg-transparent"
+          type="text"
+          name="category"
+          placeholder="Category"
+          required
+          onChange={(event) => {
+            setMenu(true);
+            setCategory(event.target.value);
+          }}
+          value={category}
+        />
+        {menu && (
+          <div className="flex flex-col w-full gap-2">
+            {categories
+              .filter((filteredcategory) =>
+                filteredcategory?.includes(category)
+              )
+              .map((category) => (
                 <div
-                  className="flex items-center gap-2 bg-secondary rounded-md hover:bg-background hover:border-2 hover:border-muted"
-                  key={index}
+                  key={category}
+                  className="p-4 bg-secondary rounded-md hover:cursor-pointer"
+                  onClick={() => {
+                    setMenu(false);
+                    setCategory(category);
+                  }}
                 >
-                  <img
-                    src={image}
-                    alt={`${image} image`}
-                    className="w-20 rounded-lg"
-                  />
-                  <button className="flex gap-2 items-center ">
-                    <MdDelete />
-                    <p>Remove</p>
-                  </button>
+                  {category}
                 </div>
               ))}
-            </div>
           </div>
         )}
+        <label htmlFor="">Images</label>
+        <div className="border border-muted rounded-md">
+          {images.length !== 0 && (
+            <div className="p-4">
+              <p>Uploaded Images:</p>
+              <div className="grid md:grid-cols-6 grid-cols-2 gap-4 py-4">
+                {images.map((image, index) => (
+                  <div
+                    className="flex items-center gap-2 bg-secondary rounded-md hover:bg-background hover:border-2 hover:border-muted"
+                    key={index}
+                    onClick={() =>
+                      setImages((prevValue) =>
+                        prevValue.filter((item) => item !== image)
+                      )
+                    }
+                  >
+                    <img
+                      src={image}
+                      alt={`${image} image`}
+                      className="w-20 rounded-lg"
+                    />
+                    <div className="flex gap-2 items-center ">
+                      <MdDelete />
+                      <p>Remove</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-        <UploadDropzone
-          endpoint="imageUploader"
-          onClientUploadComplete={(res) => {
-            console.log("Files: ", res);
-            alert("Upload Completed");
-            const images = res.map((file) => file.url);
-            setImages((prevValue) => [...prevValue, ...images]);
-          }}
-          onUploadError={(error: Error) => {
-            alert(`ERROR! ${error.message}`);
-          }}
-          onUploadBegin={(name) => {
-            console.log("Uploading: ", name);
-          }}
-        />
-        <textarea
-          className="p-4 border border-muted rounded-md bg-transparent"
-          name="description"
-          placeholder="Description"
-          required
-          onChange={(event) => setDescription(event.target.value)}
-          value={description}
-        ></textarea>
+          <UploadDropzone
+            endpoint="imageUploader"
+            onClientUploadComplete={(res) => {
+              console.log("Files: ", res);
+              const images = res.map((file) => file.url);
+              setImages((prevValue) => [...prevValue, ...images]);
+              toast.remove("uploading_images");
+              toast.success("Uploaded Images successfully.");
+            }}
+            onUploadError={(error: Error) => {
+              toast.remove("uploading_images");
+              toast.error("Images upload failed!", { id: "uploading_images" });
+            }}
+            onUploadBegin={(name) => {
+              console.log("Uploading: ", name);
+              toast.loading("Uploading Images", { id: "uploading_images" });
+            }}
+          />
+        </div>
 
         <button
           type="submit"
-          className=" p-4 rounded-md bg-secondary hover:bg-transparent border border-muted"
+          className=" p-4 rounded-md bg-primary hover:bg-background hover:text-muted-foreground text-background border border-muted"
         >
-          Add Campaign
+          Create Campaign
         </button>
       </form>
+      <Popup>
+        <div className="p-2 flex flex-col gap-4 w-full">
+          <div className="flex justify-between items-center font-bold">
+            <p>Create Campaign</p>
+            <RxCross2
+              className="hover:cursor-pointer hover:text-red-500"
+              size={20}
+            />
+          </div>
+          <div className="text-muted-foreground">
+            Are you sure you want to create a campaign?
+          </div>
+          <div className="text-end ">
+            <button
+              className="bg-red-500 rounded-md p-2 m-2"
+              onClick={(event) => {
+                mutate.mutateAsync();
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-primary rounded-md p-2 border border-muted m-2"
+              onClick={(event) => {
+                toast.loading("Creating campaign...", {
+                  id: "campaign_creation",
+                });
+                mutate.mutateAsync();
+              }}
+            >
+              Create Campaign
+            </button>
+          </div>
+        </div>
+      </Popup>
     </div>
   );
 };

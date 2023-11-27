@@ -1,6 +1,9 @@
 import CampaignCard from "@/components/CampaignCard";
+import getProfile, { User } from "@/lib/api/profile";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import React, { useState } from "react";
+import { useQuery } from "react-query";
 import { useBalance } from "wagmi";
 
 const Profile = () => {
@@ -8,8 +11,30 @@ const Profile = () => {
   const { data: walletData, status: walletStatus } = useBalance({
     address: data?.user.wallet_id as `0x${string}`,
   });
+  const { data: profileData, status: profileStatus } = useQuery({
+    queryKey: ["get Profile"],
+    queryFn: () => getProfile(),
+    enabled: status === "authenticated",
+  });
   console.log(walletData);
-  if (status === "loading" || walletStatus === "loading") return "loading...";
+  if (
+    status === "loading" ||
+    walletStatus === "loading" ||
+    profileStatus === "loading"
+  )
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        Loading...
+      </div>
+    );
+
+  if (walletStatus === "error" || profileStatus === "error")
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        Some error occured! Please try again.
+      </div>
+    );
+
   if (status === "unauthenticated") return "Not authenticated.";
   return (
     <div className="max-w-6xl mx-5 p-10 xl:mx-auto">
@@ -25,9 +50,9 @@ const Profile = () => {
           </div>
         </div>
         <div className="cols-span-2 pt-5 grid grid-cols-3 text-center">
-          <span className="text-3xl">7</span>
+          <span className="text-3xl">{profileData?.user._count.donations}</span>
           <span className="text-3xl">6</span>
-          <span className="text-3xl">7</span>
+          <span className="text-3xl">{profileData?.user._count.campaigns}</span>
           <div>Contributions</div>
           <div>Wishlist</div>
           <div>Campaigns</div>
@@ -42,12 +67,12 @@ const Profile = () => {
         </div>
       </div>
       <hr className="border-[1px] mt-9 " />
-      <ProfileTabs />
+      {profileData !== undefined && <ProfileTabs user={profileData.user} />}
     </div>
   );
 };
 
-const ProfileTabs = () => {
+const ProfileTabs = ({ user }: User) => {
   const tabs = ["Transactions", "Wishlist", "My Campaign"];
 
   const [tab, setTab] = useState<string>(tabs[0]);
@@ -75,54 +100,54 @@ const ProfileTabs = () => {
               <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
                   <div className="overflow-hidden">
-                    <table className="min-w-full text-sm font-light text-center">
-                      <thead className="border-b font-medium dark:border-neutral-500">
-                        <tr>
-                          <th scope="col" className="px-6 py-4">
-                            Invoice
-                          </th>
-                          <th scope="col" className="px-6 py-4">
-                            Status
-                          </th>
-                          <th scope="col" className="px-6 py-4">
-                            Method
-                          </th>
-                          <th scope="col" className="px-6 py-4">
-                            Amount
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border-b dark:border-neutral-500">
-                          <td className="whitespace-nowrap px-6 py-4 font-medium">
-                            1
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4">Mark</td>
-                          <td className="whitespace-nowrap px-6 py-4">Otto</td>
-                          <td className="whitespace-nowrap px-6 py-4">@mdo</td>
-                        </tr>
-                        <tr className="border-b dark:border-neutral-500">
-                          <td className="whitespace-nowrap px-6 py-4 font-medium">
-                            2
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4">Jacob</td>
-                          <td className="whitespace-nowrap px-6 py-4">
-                            Thornton
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4">@fat</td>
-                        </tr>
-                        <tr className="border-b dark:border-neutral-500">
-                          <td className="whitespace-nowrap px-6 py-4 font-medium">
-                            3
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4">Larry</td>
-                          <td className="whitespace-nowrap px-6 py-4">Wild</td>
-                          <td className="whitespace-nowrap px-6 py-4">
-                            @twitter
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    {user._count.donations === 0 ? (
+                      <p className="text-center">No donations yet!</p>
+                    ) : (
+                      <table className="min-w-full text-sm font-light text-center">
+                        <thead className="border-b font-medium dark:border-neutral-500">
+                          <tr>
+                            <th scope="col" className="px-6 py-4">
+                              Index
+                            </th>
+                            <th scope="col" className="px-6 py-4">
+                              Transaction Hash
+                            </th>
+                            <th scope="col" className="px-6 py-4">
+                              Campaign
+                            </th>
+                            <th scope="col" className="px-6 py-4">
+                              Amount
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {user.donations.map((donation, index) => (
+                            <tr
+                              className="border-b dark:border-neutral-500"
+                              key={donation.id}
+                            >
+                              <td className="whitespace-nowrap px-6 py-4 font-medium">
+                                {index + 1}
+                              </td>
+                              <td className="whitespace-nowrap px-6 py-4">
+                                {donation.transaction_hash}
+                              </td>
+                              <td className="whitespace-nowrap px-6 py-4">
+                                <Link
+                                  href={`/discover/${donation.campaignId}`}
+                                  className="text-primary underline"
+                                >
+                                  {donation.campaignId}
+                                </Link>
+                              </td>
+                              <td className="whitespace-nowrap px-6 py-4">
+                                10
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
                   </div>
                 </div>
               </div>
@@ -145,16 +170,10 @@ const ProfileTabs = () => {
         )}
         {/* for the my campaign detail */}
         {tab === tabs[2] && (
-          <div className="grid grid-cols-3">
-            {/* <CampaignCard
-              id={1}
-              title="Help for isarel"
-              account="0xA49277A2786131c46a8ee7998cD787C64D6A10A3"
-              progress="34%"
-              backers={24}
-              status={true}
-              image="https://media.istockphoto.com/id/1369394082/photo/israel.webp?b=1&s=170667a&w=0&k=20&c=3OVSZ9gVAh-r8hGAqSPoNAzPWvT4thYHvDA_kf2JvHw="
-            />*/}
+          <div className="grid grid-cols-3 gap-4">
+            {user.campaigns.map((campaign) => (
+              <CampaignCard key={campaign.id} {...campaign} />
+            ))}
           </div>
         )}
       </div>

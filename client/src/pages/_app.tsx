@@ -17,7 +17,9 @@ import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { publicProvider } from "wagmi/providers/public";
 import { QueryClient, QueryClientProvider } from "react-query";
-
+import { Toaster } from "react-hot-toast";
+import { ReactNode } from "react";
+import Footer from "@/components/Footer";
 const queryClient = new QueryClient();
 
 const { chains, publicClient } = configureChains([hardhat], [publicProvider()]);
@@ -38,15 +40,29 @@ const config = createConfig({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class">
-        <WagmiConfig config={config}>
-          <SessionProvider session={pageProps.session} refetchInterval={0}>
-            <Navbar />
-            <Component {...pageProps} />
-          </SessionProvider>
-        </WagmiConfig>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ToastProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class">
+          <WagmiConfig config={config}>
+            <SessionProvider session={pageProps.session} refetchInterval={0}>
+              <Navbar />
+              <div className="min-h-[80vh]">
+                <Component {...pageProps} />
+              </div>
+              <Footer />
+            </SessionProvider>
+          </WagmiConfig>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ToastProvider>
   );
 }
+
+const ToastProvider = ({ children }: { children: ReactNode }) => {
+  return (
+    <>
+      <Toaster />
+      {children}
+    </>
+  );
+};
