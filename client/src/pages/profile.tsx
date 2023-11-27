@@ -83,10 +83,9 @@ const ProfileTabs = ({ user }: User) => {
           <button
             key={index}
             onClick={() => setTab(tabVal)}
-            className={`${
-              tabVal === tab &&
+            className={`${tabVal === tab &&
               "border-t-2 border-primary  py-10  font-bold text-foreground"
-            }`}
+              }`}
           >
             {tabVal}
           </button>
