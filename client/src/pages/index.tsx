@@ -61,7 +61,7 @@ export default function Home() {
         <div className="home-img max-w-lg">
           <img src="/create_form.png" alt="" />
         </div>
-        <div className="home-text h-[80vh] mt-40 ml-12">
+        <div className="home-text h-[80vh] mt-40 ml-16">
           <p className="py-4">
             Embark on a journey of innovation with FundMe. Contribute to shape the future, where groundbreaking ideas meet decentralized support, unlocking limitless possibilities for creators and backers alike
           </p>
