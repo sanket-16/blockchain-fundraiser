@@ -4,15 +4,18 @@ import { HiMenu } from "react-icons/hi";
 import { BiSolidWallet } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import { useState } from "react";
-import { useDisconnect } from "wagmi";
-import { useSession } from "next-auth/react";
-import Login from "./Login";
+
+// import Login from "./Login";
+import dynamic from "next/dynamic";
+
+const Login = dynamic(() => import("./Login"), {
+  ssr: false,
+});
 
 const Navbar = () => {
   const [menu, setMenu] = useState(false);
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-  const { disconnect } = useDisconnect();
+  // const { data: session, status } = useSession();
+  // const loading = status === "loading";
 
   const menuOptions = [
     {
@@ -25,7 +28,7 @@ const Navbar = () => {
     },
     {
       name: "How It Works",
-      link: "/",
+      link: "/how-it-works",
     },
   ];
 
@@ -57,6 +60,7 @@ const Navbar = () => {
         </Link>
         <div className="flex gap-2 items-center ">
           <ThemeSwitch />
+
           <button
             className="border border-muted p-4 rounded-md"
             onClick={() => setMenu((val) => !val)}

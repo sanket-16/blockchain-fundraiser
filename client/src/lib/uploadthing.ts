@@ -10,23 +10,17 @@ const auth = async (req: NextApiRequest, res: NextApiResponse) => {
   const { authOptions } = getNextAuthOptions(req);
   const auth = await getServerSession(req, res, authOptions);
   return auth;
-}; // Fake auth function
+};
 
 export const ourFileRouter = {
-  imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 10 } })
-    .middleware(async ({ req, res }) => {
-      const user = await auth(req, res);
+  imageUploader: f({
+    image: { maxFileSize: "8MB", maxFileCount: 10 },
+  }).onUploadComplete(async ({ metadata, file }) => {
+    console.log("Upload complete");
 
-      if (!user) throw new Error("Unauthorized");
-
-      return { userId: user.user.id };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for userId:", metadata.userId);
-
-      console.log("file url", file.url);
-      return { uploadedBy: metadata.userId, url: file.url };
-    }),
+    console.log("file url", file.url);
+    return { url: file.url };
+  }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

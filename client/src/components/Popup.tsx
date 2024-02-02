@@ -12,10 +12,9 @@ const usePopup = () => {
           <div
             className="h-[100vh] w-[100vw] bg-black/50 fixed flex items-center justify-center"
             onClick={(event) => {
+              event.stopPropagation();
               if (event.currentTarget === event.target) {
                 setOpen(false);
-              } else {
-                event.stopPropagation();
               }
             }}
           >

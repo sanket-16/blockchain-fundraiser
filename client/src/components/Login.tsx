@@ -1,4 +1,4 @@
-import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
+// import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import {
   useAccount,
@@ -23,7 +23,7 @@ function Login() {
     connector: new InjectedConnector(),
     chainId: 31337,
   });
-  const { data: session, status } = useSession();
+  // const { data: session, status } = useSession();
   const { disconnect } = useDisconnect();
 
   const handleLogin = async () => {
@@ -35,38 +35,35 @@ function Login() {
         uri: window.location.origin,
         version: "1",
         chainId: 31337,
-        nonce: await getCsrfToken(),
       });
       const signature = await signMessageAsync({
         message: message.prepareMessage(),
       });
-      signIn("credentials", {
-        message: JSON.stringify(message),
-        redirect: false,
-        signature,
-      });
+      // signIn("credentials", {
+      //   message: JSON.stringify(message),
+      //   redirect: false,
+      //   signature,
+      // });
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    if (session && !isConnected) {
+    if (!isConnected) {
       connect({ connector: connectors[0] });
     }
     if (!isConnected) {
       handleLogin();
     }
     console.log(isConnected);
-  }, [isConnected, session]);
+  }, [isConnected]);
 
   return (
     <div className="relative">
-      {status === "unauthenticated" && (
+      {!isConnected && (
         <button
-          className={` ${
-            status === "unauthenticated" && `md:border-2 `
-          } border-muted  rounded-md md:p-4 hover:cursor-pointer hover:bg-secondary`}
+          className={` border-muted  rounded-md md:p-4 hover:cursor-pointer hover:bg-secondary`}
           onClick={(e) => {
             e.preventDefault();
 
@@ -80,7 +77,7 @@ function Login() {
           Sign In
         </button>
       )}
-      {status === "authenticated" && (
+      {isConnected && (
         <button
           onClick={() => setMenu((prevValue) => !prevValue)}
           className="flex gap-2 items-center"
@@ -101,14 +98,16 @@ function Login() {
           <button
             className="hover:bg-secondary rounded-md p-4 w-full text-start flex items-center gap-4"
             onClick={(e) => {
+              const timer = setTimeout(() => {
+                disconnect();
+              }, 100);
               setMenu(false);
               e.preventDefault();
-              if (session) {
-                if (isConnected) {
-                  disconnect();
-                }
-                signOut();
+
+              if (isConnected) {
+                clearTimeout(timer);
               }
+              // signOut();
             }}
           >
             <IoLogOut size={25} /> Sign Out
@@ -119,12 +118,12 @@ function Login() {
   );
 }
 
-export async function getServerSideProps(context: any) {
-  return {
-    props: {
-      csrfToken: await getCsrfToken(context),
-    },
-  };
-}
+// export async function getServerSideProps(context: any) {
+//   return {
+//     props: {
+//       csrfToken: await getCsrfToken(context),
+//     },
+//   };
+// }
 
 export default Login;
