@@ -1,12 +1,15 @@
 import { ethers } from "hardhat";
 
 const main = async () => {
-  const twitter = await ethers.deployContract("Twitter");
+  // const twitter = await ethers.deployContract("Twitter");
+  const FundMe = await ethers.deployContract("FundMe");
 
-  await twitter.waitForDeployment();
+  // await twitter.waitForDeployment();
+  await FundMe.waitForDeployment();
 
-  const twitterAddress = await twitter.getAddress();
-  console.log("Twitter Contract Deployed at: ", twitterAddress);
+  // const twitterAddress = await twitter.getAddress();
+  const FundMeAddress = await FundMe.getAddress();
+  console.log("FundMe Contract Deployed at: ", FundMeAddress);
 };
 
 const runMain = async () => {
