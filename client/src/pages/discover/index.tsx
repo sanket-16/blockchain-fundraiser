@@ -2,13 +2,20 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import FilterNav from "@/components/FilterNav";
 import Card from "@/components/CampaignCard";
-import getAllCampaigns from "@/lib/api/campaigns/getAll";
+// import getAllCampaigns from "@/lib/api/campaigns/getAll";
+import { constAbi, contractABI, contractAddress } from "@/lib/contract";
+import { useContractRead } from "wagmi";
 
 const CampaignPage = () => {
-  const { data, status } = useQuery({
-    queryKey: ["get campaigns"],
-    queryFn: () => getAllCampaigns(),
+  const { data, status } = useContractRead({
+    abi: constAbi,
+    functionName: "getCampaigns",
+    address: contractAddress,
   });
+  // const { data, status } = useQuery({
+  //   queryKey: ["get campaigns"],
+  //   queryFn: () => getAllCampaigns(),
+  // });
   console.log(data);
 
   return (
@@ -25,7 +32,7 @@ const CampaignPage = () => {
             <div className="w-full h-80 animate-pulse bg-secondary rounded-md" />
           </>
         )}
-        {data?.campaigns.map((campaign, index) => (
+        {data?.map((campaign) => (
           <Card key={campaign.id} {...campaign} />
         ))}
       </div>

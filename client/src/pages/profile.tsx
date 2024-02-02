@@ -1,25 +1,49 @@
 import CampaignCard from "@/components/CampaignCard";
 import getProfile, { User } from "@/lib/api/profile";
+import { constAbi, contractAddress } from "@/lib/contract";
+import { WeiPerEther } from "ethers";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { useBalance } from "wagmi";
+import { useAccount, useBalance, useContractReads } from "wagmi";
 
+const config = {
+  address: contractAddress as `0x${string}`,
+  abi: constAbi,
+};
 const Profile = () => {
-  const { data, status } = useSession();
+  // const { data, status } = useSession();
+  const { address, isConnected, status } = useAccount();
   const { data: walletData, status: walletStatus } = useBalance({
-    address: data?.user.wallet_id as `0x${string}`,
+    address: address,
   });
-  const { data: profileData, status: profileStatus } = useQuery({
-    queryKey: ["get Profile"],
-    queryFn: () => getProfile(),
-    enabled: status === "authenticated",
+  // const { data: profileData, status: profileStatus } = useQuery({
+  //   queryKey: ["get Profile"],
+  //   queryFn: () => getProfile(),
+  //   enabled: status === "authenticated",
+  // });
+
+  const { data, status: profileStatus } = useContractReads({
+    contracts: [
+      {
+        ...config,
+        functionName: "getUserCampaigns",
+        args: [address as `0x${string}`],
+      },
+      {
+        ...config,
+        functionName: "getDonationsByDonator",
+        args: [address as `0x${string}`],
+      },
+    ],
   });
-  console.log(walletData);
+
+  console.log(walletData, data);
   if (
-    status === "loading" ||
     walletStatus === "loading" ||
+    status === "connecting" ||
+    status === "reconnecting" ||
     profileStatus === "loading"
   )
     return (
@@ -35,44 +59,81 @@ const Profile = () => {
       </div>
     );
 
-  if (status === "unauthenticated") return "Not authenticated.";
-  return (
-    <div className="max-w-6xl mx-5 p-10 xl:mx-auto">
-      <div className="grid grid-cols-2 gap-1">
-        <div className="w-full flex justify-center">
-          <div>
-            {/* <img
+  if (status === "disconnected") return "Not authenticated.";
+  if (
+    status === "connected" &&
+    profileStatus === "success" &&
+    data !== undefined
+  )
+    return (
+      <div className="max-w-6xl mx-5 p-10 xl:mx-auto">
+        <div className="grid grid-cols-2 gap-1">
+          <div className="w-full flex justify-center">
+            <div>
+              {/* <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJapEe9b-WgzEDHpQSp6SCrdVHS32o35c_2g&usqp=CAU"
               alt="pfp"
               className="block rounded-full h-36 w-36"
             /> */}
-            <div className="h-36 w-36 rounded-full bg-gradient-to-br from-red-500 to-blue-500"></div>
+              <div className="h-36 w-36 rounded-full bg-gradient-to-br from-red-500 to-blue-500"></div>
+            </div>
+          </div>
+          <div className="cols-span-2 pt-5 grid grid-cols-3 text-center">
+            <span className="text-3xl">{data[1]?.result?.length}</span>
+            <span className="text-3xl">6</span>
+            <span className="text-3xl">{data[0]?.result?.length}</span>
+            <div>Contributions</div>
+            <div>Wishlist</div>
+            <div>Campaigns</div>
+          </div>
+          <div className="flex items-center flex-col pt-4">
+            <div>
+              <p className="font-bold text-lg">Account ID : {address}</p>
+              <p className="pt-2">Balance : {walletData?.formatted}</p>
+            </div>
           </div>
         </div>
-        <div className="cols-span-2 pt-5 grid grid-cols-3 text-center">
-          <span className="text-3xl">{profileData?.user._count.donations}</span>
-          <span className="text-3xl">6</span>
-          <span className="text-3xl">{profileData?.user._count.campaigns}</span>
-          <div>Contributions</div>
-          <div>Wishlist</div>
-          <div>Campaigns</div>
-        </div>
-        <div className="flex items-center flex-col pt-4">
-          <div>
-            <p className="font-bold text-lg">
-              Account ID : {data?.user.wallet_id}
-            </p>
-            <p className="pt-2">Balance : {walletData?.formatted}</p>
-          </div>
-        </div>
+        <hr className="border-[1px] mt-9 " />
+        {}
+        {profileStatus === "success" &&
+          data !== undefined &&
+          data[1].result !== undefined &&
+          data[0].result !== undefined && (
+            <ProfileTabs
+              data={[
+                data[0].result as unknown as Campaign[],
+                data[1].result as unknown as Donation[],
+              ]}
+            />
+          )}
       </div>
-      <hr className="border-[1px] mt-9 " />
-      {profileData !== undefined && <ProfileTabs user={profileData.user} />}
-    </div>
-  );
+    );
 };
 
-const ProfileTabs = ({ user }: User) => {
+type Donation = {
+  id: string;
+  donator: `0x${string}`;
+  amount: bigint;
+  message: string;
+};
+
+type Campaign = {
+  id: string;
+  owner: `0x${string}`;
+  title: string;
+  description: string;
+  images: readonly string[];
+  target: bigint;
+  deadline: bigint;
+  amountCollected: bigint;
+  donations: readonly Donation[];
+};
+
+const ProfileTabs = ({
+  data: [campaigns, donations],
+}: {
+  data: [readonly Campaign[], readonly Donation[]];
+}) => {
   const tabs = ["Transactions", "Wishlist", "My Campaign"];
 
   const [tab, setTab] = useState<string>(tabs[0]);
@@ -83,9 +144,10 @@ const ProfileTabs = ({ user }: User) => {
           <button
             key={index}
             onClick={() => setTab(tabVal)}
-            className={`${tabVal === tab &&
+            className={`${
+              tabVal === tab &&
               "border-t-2 border-primary  py-10  font-bold text-foreground"
-              }`}
+            }`}
           >
             {tabVal}
           </button>
@@ -99,7 +161,7 @@ const ProfileTabs = ({ user }: User) => {
               <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
                   <div className="overflow-hidden">
-                    {user._count.donations === 0 ? (
+                    {donations.length === 0 ? (
                       <p className="text-center">No donations yet!</p>
                     ) : (
                       <table className="min-w-full text-sm font-light text-center">
@@ -120,7 +182,7 @@ const ProfileTabs = ({ user }: User) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {user.donations.map((donation, index) => (
+                          {donations.map((donation, index) => (
                             <tr
                               className="border-b dark:border-neutral-500"
                               key={donation.id}
@@ -129,18 +191,21 @@ const ProfileTabs = ({ user }: User) => {
                                 {index + 1}
                               </td>
                               <td className="whitespace-nowrap px-6 py-4 text-ellipsis">
-                                {donation.transaction_hash}
+                                {/* {donation.transaction_hash} */}
+                                Transaction Hash
                               </td>
                               <td className="whitespace-nowrap px-6 py-4">
                                 <Link
-                                  href={`/discover/${donation.campaignId}`}
+                                  href={`/discover/id`}
+                                  // ${donation.campaignId}
                                   className="text-primary underline"
                                 >
-                                  {donation.campaignId}
+                                  Campaign ID
+                                  {/* {donation.campaignId} */}
                                 </Link>
                               </td>
                               <td className="whitespace-nowrap px-6 py-4">
-                                10
+                                {Number(donation?.amount / WeiPerEther)} ETH
                               </td>
                             </tr>
                           ))}
@@ -170,9 +235,11 @@ const ProfileTabs = ({ user }: User) => {
         {/* for the my campaign detail */}
         {tab === tabs[2] && (
           <div className="grid grid-cols-3 gap-4">
-            {user.campaigns.map((campaign) => (
-              <CampaignCard key={campaign.id} {...campaign} />
-            ))}
+            {campaigns.length === 0
+              ? "No campaigns yet"
+              : campaigns.map((campaign) => (
+                  <CampaignCard key={campaign.id} {...campaign} />
+                ))}
           </div>
         )}
       </div>

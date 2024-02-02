@@ -3,10 +3,13 @@ import { useMutation } from "react-query";
 import { Category } from "@prisma/client";
 import { RxCross2 } from "react-icons/rx";
 import { MdDelete } from "react-icons/md";
-import createCampaign from "@/lib/api/campaigns/create";
 import { UploadDropzone } from "@/lib/uploadThingButton";
 import usePopup from "@/components/Popup";
 import toast from "react-hot-toast";
+import { useAccount, useContractWrite } from "wagmi";
+import { constAbi, contractAddress } from "@/lib/contract";
+import { v4 as uuidv4 } from "uuid";
+import { parseEther } from "ethers";
 
 function getEnumKeys<
   T extends string,
@@ -28,29 +31,56 @@ const CreateFundraiser = () => {
   const [menu, setMenu] = useState<boolean>(false);
   const { Popup, open, setOpen } = usePopup();
 
-  const mutate = useMutation({
-    mutationKey: ["create fundraiser"],
-    mutationFn: () =>
-      createCampaign({
-        title,
-        amount,
-        date,
-        description,
-        images: images,
-        location,
-        category,
-      }),
-    onError: (err) => {
+  const { address, isConnected } = useAccount();
+
+  const { writeAsync, isSuccess, isError } = useContractWrite({
+    abi: constAbi,
+    address: contractAddress,
+    functionName: "createCampaign",
+    onSuccess: () => {
+      setOpen(false);
+
       toast.remove("campaign_creation");
-      toast.error("Campaign Creation failed!");
-      console.log(err);
+      toast.success("Campaign Created Successfully.");
+
+      setTitle("");
+      setAmount(0);
+      setDescription("");
+      setDate("");
+      setLocation("");
+      setCategory("");
+      setImages([]);
     },
-    onSuccess: (data) => {
+    onError: () => {
+      setOpen(false);
       toast.remove("campaign_creation");
-      toast.success("Campaign created successfully!");
-      console.log(data);
+      toast.error("Campaign Creation failed.");
     },
   });
+
+  // const mutate = useMutation({
+  //   mutationKey: ["create fundraiser"],
+  //   mutationFn: () =>
+  //     createCampaign({
+  //       title,
+  //       amount,
+  //       date,
+  //       description,
+  //       images: images,
+  //       location,
+  //       category,
+  //     }),
+  //   onError: (err) => {
+  //     toast.remove("campaign_creation");
+  //     toast.error("Campaign Creation failed!");
+  //     console.log(err);
+  //   },
+  //   onSuccess: (data) => {
+  //     toast.remove("campaign_creation");
+  //     toast.success("Campaign created successfully!");
+  //     console.log(data);
+  //   },
+  // });
 
   return (
     <div>
@@ -220,18 +250,40 @@ const CreateFundraiser = () => {
             <button
               className="bg-red-500 rounded-md p-2 m-2"
               onClick={(event) => {
-                mutate.mutateAsync();
+                // mutate.mutateAsync();
               }}
             >
               Cancel
             </button>
             <button
               className="bg-primary rounded-md p-2 border border-muted m-2"
-              onClick={(event) => {
+              onClick={async (event) => {
                 toast.loading("Creating campaign...", {
                   id: "campaign_creation",
                 });
-                mutate.mutateAsync();
+                if (isConnected) {
+                  const args: readonly [
+                    string,
+                    `0x${string}`,
+                    string,
+                    string,
+                    string,
+                    readonly string[],
+                    bigint,
+                    bigint
+                  ] = [
+                    uuidv4(),
+                    address as `0x${string}`,
+                    title,
+                    description,
+                    category,
+                    images,
+                    parseEther(String(amount)),
+                    BigInt(new Date(date).getTime()),
+                  ];
+                  await writeAsync({ args: args });
+                }
+                // mutate.mutateAsync();
               }}
             >
               Create Campaign
