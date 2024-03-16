@@ -10,90 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Category {
-  Environment
-  Business
-  Community
-}
-
 enum Status {
-  Complete
   Waiting
   Approved
   Rejected
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id        String     @id() @default(uuid())
-  name      String?
-  wallet_id String     @unique
-  campaigns Campaign[]
-  donations Donation[]
-  accounts  Account[]
-  sessions  Session[]
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
+  Published
 }
 
 model Campaign {
-  id               String     @id() @default(uuid())
-  title            String
-  description      String
-  images           String[]
-  status           Status     @default(Waiting)
-  category         Category
-  Location         String
-  total_amount     Int
-  completed_amount Int
-  created_at       DateTime   @default(now())
-  updated_at       DateTime   @updatedAt()
-  User             User?      @relation(fields: [userId], references: [id])
-  userId           String?
-  donations        Donation[]
-  end_date         DateTime
-}
-
-model Donation {
-  id               String    @id() @default(uuid())
-  User             User?     @relation(fields: [userId], references: [id])
-  userId           String?
-  amount           Int       @default(0)
-  Campaign         Campaign? @relation(fields: [campaignId], references: [id])
-  campaignId       String?
-  message          String
-  transaction_hash String
-  time             DateTime  @default(now())
+  id          String   @id() @default(uuid())
+  contractId  String?
+  title       String
+  description String
+  email       String
+  images      String[]
+  proof       String[]
+  status      Status   @default(Waiting)
+  category    String
+  location    String
+  target      Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+  owner       String
+  end_date    DateTime
 }
