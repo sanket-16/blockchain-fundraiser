@@ -1,5 +1,5 @@
 import CampaignCard from "@/components/CampaignCard";
-import getProfile, { User } from "@/lib/api/profile";
+// import getProfile, { User } from "@/lib/api/admin-auth";
 import { constAbi, contractAddress } from "@/lib/contract";
 import { WeiPerEther } from "ethers";
 import { useSession } from "next-auth/react";
@@ -134,7 +134,7 @@ const ProfileTabs = ({
 }: {
   data: [readonly Campaign[], readonly Donation[]];
 }) => {
-  const tabs = ["Transactions", "Wishlist", "My Campaign"];
+  const tabs = ["My Campaign", "Transactions", "Wishlist"];
 
   const [tab, setTab] = useState<string>(tabs[0]);
   return (
@@ -155,7 +155,7 @@ const ProfileTabs = ({
       </div>
       <div>
         {/* for transaction tab */}
-        {tab === tabs[0] && (
+        {tab === tabs[2] && (
           <div>
             <div className="flex flex-col p-4">
               <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -229,17 +229,28 @@ const ProfileTabs = ({
               backers={24}
               status={true}
               image="https://media.istockphoto.com/id/1369394082/photo/israel.webp?b=1&s=170667a&w=0&k=20&c=3OVSZ9gVAh-r8hGAqSPoNAzPWvT4thYHvDA_kf2JvHw="
-        />*/}
+        /> */}
           </div>
         )}
         {/* for the my campaign detail */}
-        {tab === tabs[2] && (
+        {tab === tabs[0] && (
           <div className="grid grid-cols-3 gap-4">
+            <p className="md:col-span-3 font-bold mt-8 mb-4 text-center">
+              Approved Campaigns
+            </p>
             {campaigns.length === 0
               ? "No campaigns yet"
               : campaigns.map((campaign) => (
                   <CampaignCard key={campaign.id} {...campaign} />
                 ))}
+            <p className="md:col-span-3 font-bold mt-8 mb-4 text-center">
+              Waiting Campaigns
+            </p>
+            {"waiting campaigns"}
+            <p className="md:col-span-3 font-bold mt-8 mb-4 text-center">
+              Rejected Campaigns
+            </p>
+            {"rejected campaigns"}
           </div>
         )}
       </div>

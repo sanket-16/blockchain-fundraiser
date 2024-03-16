@@ -1,4 +1,4 @@
-import { getNextAuthOptions } from "@/pages/api/auth/[...nextauth]";
+// import { getNextAuthOptions } from "@/pages/api/auth/[...nextauth]";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 
@@ -7,9 +7,9 @@ import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 const f = createUploadthing();
 
 const auth = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { authOptions } = getNextAuthOptions(req);
-  const auth = await getServerSession(req, res, authOptions);
-  return auth;
+  // const { authOptions } = getNextAuthOptions(req);
+  // const auth = await getServerSession(req, res, authOptions);
+  return { id: "hello" };
 };
 
 export const ourFileRouter = {
