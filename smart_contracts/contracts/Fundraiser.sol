@@ -6,6 +6,7 @@ contract FundMe {
     string id;
     address donator;
     uint256 amount;
+    uint createdAt;
     string  message;
   }
 
@@ -18,6 +19,7 @@ contract FundMe {
     string[] images;
     uint256 target;
     uint deadline;
+    uint createdAt;
     uint amountCollected;
     Donation[] donations;
   }
@@ -37,8 +39,10 @@ contract FundMe {
     campaign.category = _category;
     campaign.images = _images;
     campaign.target =  _target;
+    campaign.createdAt = block.timestamp;
     campaign.deadline = _deadline;
     campaign.amountCollected = 0;
+
 
     numberOfCampaigns++;
 
@@ -52,6 +56,7 @@ contract FundMe {
         donation.amount = msg.value;
         donation.donator = msg.sender;
         donation.message = _message;
+        donation.createdAt = block.timestamp;
         
          for (uint i = 0; i < numberOfCampaigns; i++) {
             string memory check = campaigns[i].id;
@@ -96,7 +101,7 @@ contract FundMe {
             }
         }
 
-        return Campaign("", address(0), "", "", "", new string[](0), 0, 0, 0, new Donation[](0));
+        return Campaign("", address(0), "", "", "", new string[](0), 0 ,0 , 0, 0, new Donation[](0));
     }
 
    function getUserCampaigns(address _address) public view returns (Campaign[] memory) {
