@@ -1,6 +1,8 @@
+import CampaignApproval from "@/components/Emails/CampaignApproval";
 import createPrismaClient from "@/lib/prisma";
+import sendMail from "@/lib/sendEmail";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
+// import { getServerSession } from "next-auth";
 // import { getNextAuthOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
@@ -25,6 +27,21 @@ export default async function handler(
   });
   prisma.$disconnect();
 
+  if (campaign) {
+    if (campaign.email.length !== 0) {
+      if (campaign.status === "Approved") {
+        const { render, transporter } = sendMail();
+        const emailHtml = render(CampaignApproval());
+        const options = {
+          from: "help@fundme.com",
+          to: campaign.email,
+          subject: "Congratulations! 🥳",
+          html: emailHtml,
+        };
+        await transporter.sendMail(options);
+      }
+    }
+  }
   if (campaign) {
     res.status(200).json({ message: "Campaign updated successfully." });
   } else {

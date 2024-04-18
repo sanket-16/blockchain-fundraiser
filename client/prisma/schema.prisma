@@ -8,14 +8,14 @@ datasource db {
 }
 
 model Campaign {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   title       String
   description String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
   end_date    DateTime
   images      String[]
-  status      Status   @default(Waiting)
+  status      Status     @default(Waiting)
   contractId  String?
   email       String
   category    String
@@ -23,6 +23,12 @@ model Campaign {
   owner       String
   target      Int
   proof       String[]
+  wishlists   Wishlist[]
+}
+
+model Wishlist {
+  owner     String     @id @unique
+  campaigns Campaign[]
 }
 
 enum Status {

@@ -17,10 +17,10 @@ const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "";
 
-export const CampaignCreation = () => (
+export const CampaignApproval = () => (
   <Html>
     <Head />
-    <Preview>Your campaign has been submitted for approval.</Preview>
+    <Preview>Your campaign has approved.</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={box}>
@@ -30,18 +30,15 @@ export const CampaignCreation = () => (
             Thankyou for choosing FundMe to create your campaign.
           </Text>
           <Text style={paragraph}>
-            You can view status of your campaign on the website. Press the
-            button below for the same.
+            You can view and publish the campaign on the link below.
           </Text>
           <Button style={button} href={`${baseUrl}/profile`}>
             View your Campaigns
           </Button>
           <Hr style={hr} />
           <Text style={paragraph}>
-            Once your campaign is approved you will recieve another mail. Please
-            keep in mind that after your campaign is approved there will be a
-            small gas fees that needs to be paid before the campaign goes
-            online.
+            Please keep in mind that there will be a small gas fees that needs
+            to be paid before the campaign goes online.
           </Text>
 
           <Text style={paragraph}>
@@ -60,7 +57,7 @@ export const CampaignCreation = () => (
   </Html>
 );
 
-export default CampaignCreation;
+export default CampaignApproval;
 
 const logo = {
   borderColor: "#14f588",

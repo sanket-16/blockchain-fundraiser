@@ -52,7 +52,7 @@ export default async function handler(
       const options = {
         from: "help@fundme.com",
         to: email,
-        subject: "Good morning",
+        subject: "Congratulations! 🥳",
         html: emailHtml,
       };
       await transporter.sendMail(options);
