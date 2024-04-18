@@ -2,7 +2,6 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
-import { SessionProvider } from "next-auth/react";
 import {
   WagmiConfig,
   configureChains,
@@ -25,15 +24,7 @@ const queryClient = new QueryClient();
 const { chains, publicClient } = configureChains([hardhat], [publicProvider()]);
 
 const config = createConfig({
-  connectors: [
-    new InjectedConnector({ chains }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId: "...",
-      },
-    }),
-  ],
+  connectors: [new InjectedConnector({ chains })],
   autoConnect: true,
   publicClient,
 });
@@ -44,13 +35,11 @@ export default function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class">
           <WagmiConfig config={config}>
-            <SessionProvider session={pageProps.session} refetchInterval={0}>
-              <Navbar />
-              <div className="min-h-[80vh]">
-                <Component {...pageProps} />
-              </div>
-              <Footer />
-            </SessionProvider>
+            <Navbar />
+            <div className="min-h-[80vh]">
+              <Component {...pageProps} />
+            </div>
+            <Footer />
           </WagmiConfig>
         </ThemeProvider>
       </QueryClientProvider>

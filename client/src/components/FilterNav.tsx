@@ -1,17 +1,16 @@
-import { useState } from 'react';
-import { BiFilterAlt } from 'react-icons/bi';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { categories } from "@/lib/categories";
+import { useState } from "react";
+import { BiFilterAlt } from "react-icons/bi";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { Button } from "./ui/button";
 
-const categories = [
-  'Environment',
-  'Businesses',
-  'Community',
-  'Family',
-  'Sports',
-  'Events',
-  'Others',
-];
-const FilterNav = () => {
+const FilterNav = ({
+  category,
+  setCategory,
+}: {
+  category: string;
+  setCategory: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const [menu, setMenu] = useState<boolean>(false);
   return (
     <div className="flex flex-row justify-between gap-2 p-4 border-2 rounded-md border-muted">
@@ -33,10 +32,24 @@ const FilterNav = () => {
               <p
                 key={index}
                 className="p-4 w-full hover:cursor-pointer hover:bg-secondary rounded-md"
+                onClick={() => {
+                  setCategory(category);
+                  setMenu(false);
+                }}
               >
                 {category}
               </p>
             ))}
+            <Button
+              className="col-span-2"
+              variant="secondary"
+              onClick={() => {
+                setCategory("");
+                setMenu(false);
+              }}
+            >
+              Clear filters
+            </Button>
           </div>
         )}
       </div>

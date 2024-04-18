@@ -1,5 +1,3 @@
-import { Donation } from "@prisma/client";
-
 export type Campaign = {
   id: string;
   title: string;
@@ -9,7 +7,6 @@ export type Campaign = {
   category: string;
   description: string;
   created_at: Date;
-  donations: Donation[];
   Location: string;
   end_date: Date;
   images: string[];

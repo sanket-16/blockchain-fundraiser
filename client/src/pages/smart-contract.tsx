@@ -1,5 +1,5 @@
 import { contractABI, contractAddress } from "@/lib/contract";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useContractRead, useContractWrite, useWalletClient } from "wagmi";
 
@@ -14,7 +14,7 @@ const SmartContract = () => {
   const [enable, setEnable] = useState(false);
   const [tweet, setTweet] = useState("");
   const [contractData, setContractData] = useState<Tweets>();
-  const { data: session, status } = useSession();
+  // const { data: session, status } = useSession();
   const {
     data: walletClient,
     isLoading,

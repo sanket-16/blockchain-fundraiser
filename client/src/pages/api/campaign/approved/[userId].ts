@@ -6,8 +6,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ campaigns: Campaign[] }>
 ) {
+  const { userId } = req.query;
+  console.log(userId, "hee");
   const prisma = createPrismaClient();
-  const campaigns = await prisma.campaign.findMany({});
+  const campaigns = await prisma.campaign.findMany({
+    where: {
+      status: "Approved",
+      owner: String(userId),
+    },
+  });
   prisma.$disconnect();
 
   res.status(200).json({ campaigns });

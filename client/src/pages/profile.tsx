@@ -1,13 +1,14 @@
-import CampaignCard from "@/components/CampaignCard";
-import getProfile, { User } from "@/lib/api/profile";
+import CampaignCard, { UserCampaignCard } from "@/components/CampaignCard";
+import { getUserWaitingCampaigns } from "@/lib/api/campaigns/waiting";
+// import getProfile, { User } from "@/lib/api/admin-auth";
 import { constAbi, contractAddress } from "@/lib/contract";
 import { WeiPerEther } from "ethers";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount, useBalance, useContractReads } from "wagmi";
-
+import type { Campaign as DBCampaign } from "@prisma/client";
+import { getUserApprovedCampaigns } from "@/lib/api/campaigns/approved";
 const config = {
   address: contractAddress as `0x${string}`,
   abi: constAbi,
@@ -18,13 +19,25 @@ const Profile = () => {
   const { data: walletData, status: walletStatus } = useBalance({
     address: address,
   });
-  // const { data: profileData, status: profileStatus } = useQuery({
-  //   queryKey: ["get Profile"],
-  //   queryFn: () => getProfile(),
-  //   enabled: status === "authenticated",
-  // });
+  const { data: waitingCampaigns, status: waitingCampaignsStatus } = useQuery({
+    queryKey: ["waiting campaigns"],
+    queryFn: () => getUserWaitingCampaigns(String(address)),
+    enabled: status === "connected",
+  });
+  const { data: approvedCampaigns, status: approvedCampaignsStatus } = useQuery(
+    {
+      queryKey: ["approved campaigns"],
+      queryFn: () => getUserApprovedCampaigns(String(address)),
+      enabled: status === "connected",
+    }
+  );
 
-  const { data, status: profileStatus } = useContractReads({
+  const {
+    data,
+    status: profileStatus,
+    error,
+    isError,
+  } = useContractReads({
     contracts: [
       {
         ...config,
@@ -37,14 +50,17 @@ const Profile = () => {
         args: [address as `0x${string}`],
       },
     ],
+    enabled: isConnected,
   });
 
-  console.log(walletData, data);
+  console.log(data, profileStatus, isError);
   if (
     walletStatus === "loading" ||
     status === "connecting" ||
     status === "reconnecting" ||
-    profileStatus === "loading"
+    profileStatus === "loading" ||
+    waitingCampaignsStatus === "loading" ||
+    approvedCampaignsStatus === "loading"
   )
     return (
       <div className="h-[60vh] flex items-center justify-center">
@@ -52,7 +68,12 @@ const Profile = () => {
       </div>
     );
 
-  if (walletStatus === "error" || profileStatus === "error")
+  if (
+    walletStatus === "error" ||
+    profileStatus === "error" ||
+    waitingCampaignsStatus === "error" ||
+    approvedCampaignsStatus === "error"
+  )
     return (
       <div className="h-[60vh] flex items-center justify-center">
         Some error occured! Please try again.
@@ -82,7 +103,7 @@ const Profile = () => {
             <span className="text-3xl">{data[1]?.result?.length}</span>
             <span className="text-3xl">6</span>
             <span className="text-3xl">{data[0]?.result?.length}</span>
-            <div>Contributions</div>
+            <div>Donations</div>
             <div>Wishlist</div>
             <div>Campaigns</div>
           </div>
@@ -96,14 +117,17 @@ const Profile = () => {
         <hr className="border-[1px] mt-9 " />
         {}
         {profileStatus === "success" &&
+          waitingCampaignsStatus === "success" &&
+          approvedCampaignsStatus === "success" &&
           data !== undefined &&
           data[1].result !== undefined &&
+          waitingCampaigns !== undefined &&
           data[0].result !== undefined && (
             <ProfileTabs
-              data={[
-                data[0].result as unknown as Campaign[],
-                data[1].result as unknown as Donation[],
-              ]}
+              publishedCampaigns={data[0].result}
+              donations={data[1].result}
+              waitingCampaigns={waitingCampaigns.campaigns}
+              approvedCampaigns={approvedCampaigns.campaigns}
             />
           )}
       </div>
@@ -130,11 +154,17 @@ type Campaign = {
 };
 
 const ProfileTabs = ({
-  data: [campaigns, donations],
+  publishedCampaigns,
+  donations,
+  waitingCampaigns,
+  approvedCampaigns,
 }: {
-  data: [readonly Campaign[], readonly Donation[]];
+  publishedCampaigns: readonly Campaign[];
+  donations: readonly Donation[];
+  waitingCampaigns: DBCampaign[];
+  approvedCampaigns: DBCampaign[];
 }) => {
-  const tabs = ["Transactions", "Wishlist", "My Campaign"];
+  const tabs = ["My Campaign", "Donations", "Wishlist"];
 
   const [tab, setTab] = useState<string>(tabs[0]);
   return (
@@ -154,8 +184,8 @@ const ProfileTabs = ({
         ))}
       </div>
       <div>
-        {/* for transaction tab */}
-        {tab === tabs[0] && (
+        {/* for donations tab */}
+        {tab === tabs[1] && (
           <div>
             <div className="flex flex-col p-4">
               <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -171,7 +201,7 @@ const ProfileTabs = ({
                               Index
                             </th>
                             <th scope="col" className="px-6 py-4">
-                              Transaction Hash
+                              Donator Wallet
                             </th>
                             <th scope="col" className="px-6 py-4">
                               Campaign
@@ -192,7 +222,7 @@ const ProfileTabs = ({
                               </td>
                               <td className="whitespace-nowrap px-6 py-4 text-ellipsis">
                                 {/* {donation.transaction_hash} */}
-                                Transaction Hash
+                                {donation.donator}
                               </td>
                               <td className="whitespace-nowrap px-6 py-4">
                                 <Link
@@ -219,7 +249,7 @@ const ProfileTabs = ({
           </div>
         )}
         {/* for the wishlist detail */}
-        {tab === tabs[1] && (
+        {tab === tabs[2] && (
           <div className="grid grid-cols-3">
             {/* <CampaignCard
               id={1}
@@ -229,17 +259,40 @@ const ProfileTabs = ({
               backers={24}
               status={true}
               image="https://media.istockphoto.com/id/1369394082/photo/israel.webp?b=1&s=170667a&w=0&k=20&c=3OVSZ9gVAh-r8hGAqSPoNAzPWvT4thYHvDA_kf2JvHw="
-        />*/}
+        /> */}
           </div>
         )}
         {/* for the my campaign detail */}
-        {tab === tabs[2] && (
+        {tab === tabs[0] && (
           <div className="grid grid-cols-3 gap-4">
-            {campaigns.length === 0
+            <p className="md:col-span-3 font-bold mt-8 mb-4 text-center">
+              Published Campaigns
+            </p>
+            {publishedCampaigns.length === 0
               ? "No campaigns yet"
-              : campaigns.map((campaign) => (
+              : publishedCampaigns.map((campaign) => (
                   <CampaignCard key={campaign.id} {...campaign} />
                 ))}
+            <p className="md:col-span-3 font-bold mt-8 mb-4 text-center">
+              Approved Campaigns
+            </p>
+            {approvedCampaigns.length === 0 || undefined
+              ? "No campaigns yet"
+              : approvedCampaigns.map((campaign) => (
+                  <UserCampaignCard key={campaign.id} campaign={campaign} />
+                ))}
+            <p className="md:col-span-3 font-bold mt-8 mb-4 text-center">
+              Waiting Campaigns
+            </p>
+            {waitingCampaigns.length === 0 || undefined
+              ? "No campaigns yet"
+              : waitingCampaigns.map((campaign) => (
+                  <UserCampaignCard key={campaign.id} campaign={campaign} />
+                ))}
+            <p className="md:col-span-3 font-bold mt-8 mb-4 text-center">
+              Rejected Campaigns
+            </p>
+            {"rejected campaigns"}
           </div>
         )}
       </div>

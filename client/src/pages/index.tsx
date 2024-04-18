@@ -1,5 +1,5 @@
+import { Button } from "@/components/ui/button";
 import { contractABI, contractAddress } from "@/lib/contract";
-import { useSession } from "next-auth/react";
 import { Inter } from "next/font/google";
 import Head from "next/head";
 import Link from "next/link";
@@ -10,7 +10,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [enable, setEnable] = useState(false);
-  const { data: session, status } = useSession();
   const {
     data: walletClient,
     isLoading,
@@ -51,12 +50,9 @@ export default function Home() {
               causes and support initiatives that make a difference.Embrace the
               future of philanthropy through decentralized donations
             </p>
-            <Link
-              href={"/discover"}
-              className=" p-4 rounded-md bg-primary hover:bg-background hover:text-muted-foreground text-background border border-muted "
-            >
-              Donate Now
-            </Link>
+            <Button asChild size="lg">
+              <Link href={"/discover"}>Donate Now</Link>
+            </Button>
           </div>
         </div>
         <div className="home-img-2 mt-24">

@@ -1,19 +1,4 @@
-export type Campaign = {
-  id: string;
-  title: string;
-  User: {
-    wallet_id: string;
-  };
-  images: string[];
-  category: string;
-  Location: string;
-  end_date: Date;
-  total_amount: number;
-  completed_amount: number;
-  _count: {
-    donations: number;
-  };
-};
+import { Campaign } from "@prisma/client";
 
 type Campaigns = {
   campaigns: Campaign[];
