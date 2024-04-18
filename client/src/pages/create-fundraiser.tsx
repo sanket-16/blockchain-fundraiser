@@ -14,11 +14,9 @@ import {
 import { MdDelete } from "react-icons/md";
 import { UploadDropzone } from "@/lib/uploadThingButton";
 import toast from "react-hot-toast";
-import { useAccount, useContractWrite } from "wagmi";
-import { constAbi, contractAddress } from "@/lib/contract";
-import { v4 as uuidv4 } from "uuid";
-import { parseEther } from "ethers";
+import { useAccount } from "wagmi";
 import createCampaign from "@/lib/api/campaigns/create";
+import { categories } from "@/lib/categories";
 
 // function getEnumKeys<
 //   T extends string,
@@ -26,7 +24,6 @@ import createCampaign from "@/lib/api/campaigns/create";
 // >(enumVariable: { [key in T]: TEnumValue }) {
 //   return Object.keys(enumVariable) as Array<T>;
 // }
-const categories = ["Business", "Medical", "Personal"];
 
 const CreateFundraiser = () => {
   let toastId: string;
@@ -51,7 +48,7 @@ const CreateFundraiser = () => {
   //   onSuccess: () => {
   //     setOpen(false);
 
-  //     toast.remove("campaign_creation");
+  //     toast.remove("loading");
   //     toast.success("Campaign Created Successfully.");
 
   //     setTitle("");
@@ -64,7 +61,7 @@ const CreateFundraiser = () => {
   //   },
   //   onError: () => {
   //     setOpen(false);
-  //     toast.remove("campaign_creation");
+  //     toast.remove("loading");
   //     toast.error("Campaign Creation failed.");
   //   },
   // });
@@ -85,12 +82,12 @@ const CreateFundraiser = () => {
         owner: address as string,
       }),
     onError: (err) => {
-      toast.remove("campaign_creation");
+      toast.dismiss("loading");
       toast.error("Campaign Creation failed!");
       console.log(err);
     },
     onSuccess: (data) => {
-      toast.remove("campaign_creation");
+      toast.dismiss("loading");
       toast.success("Campaign created successfully!");
       console.log(data);
     },
@@ -338,32 +335,32 @@ const CreateFundraiser = () => {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={async (event) => {
-                toast.loading("Creating campaign...", {
-                  id: "campaign_creation",
-                });
-                // if (isConnected) {
-                //   const args: readonly [
-                //     string,
-                //     `0x${string}`,
-                //     string,
-                //     string,
-                //     string,
-                //     readonly string[],
-                //     bigint,
-                //     bigint
-                //   ] = [
-                //     uuidv4(),
-                //     address as `0x${string}`,
-                //     title,
-                //     description,
-                //     category,
-                //     images,
-                //     parseEther(String(target)),
-                //     BigInt(new Date(date).getTime()),
-                //   ];
-                //   // await writeAsync({ args: args });
-                // }
-                mutate.mutateAsync();
+                if (isConnected) {
+                  toast.loading("Creating campaign...", {
+                    id: "loading",
+                  });
+                  //   const args: readonly [
+                  //     string,
+                  //     `0x${string}`,
+                  //     string,
+                  //     string,
+                  //     string,
+                  //     readonly string[],
+                  //     bigint,
+                  //     bigint
+                  //   ] = [
+                  //     uuidv4(),
+                  //     address as `0x${string}`,
+                  //     title,
+                  //     description,
+                  //     category,
+                  //     images,
+                  //     parseEther(String(target)),
+                  //     BigInt(new Date(date).getTime()),
+                  //   ];
+                  //   // await writeAsync({ args: args });
+                  mutate.mutateAsync();
+                }
               }}
             >
               Continue

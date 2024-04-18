@@ -2,7 +2,6 @@ import createPrismaClient from "@/lib/prisma";
 import sendMail from "@/lib/sendEmail";
 import CampaignCreation from "@/components/Emails/CampaignCreation";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
 // import { getNextAuthOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
@@ -46,17 +45,18 @@ export default async function handler(
   });
   prisma.$disconnect();
 
-  const { render, transporter } = sendMail();
-  const emailHtml = render(CampaignCreation());
-  const options = {
-    from: "help@fundme.com",
-    to: "san162002@gmail.com",
-    subject: "Good morning",
-    html: emailHtml,
-  };
-
   if (campaign) {
-    await transporter.sendMail(options);
+    if (email.length !== 0) {
+      const { render, transporter } = sendMail();
+      const emailHtml = render(CampaignCreation());
+      const options = {
+        from: "help@fundme.com",
+        to: email,
+        subject: "Good morning",
+        html: emailHtml,
+      };
+      await transporter.sendMail(options);
+    }
     res.status(200).json({ message: "Campaign created successfully." });
   } else {
     res.status(400).json({ message: "Failed to create fundraiser." });

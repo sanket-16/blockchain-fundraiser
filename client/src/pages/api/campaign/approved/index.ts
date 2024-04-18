@@ -1,21 +1,19 @@
 import createPrismaClient from "@/lib/prisma";
+import { Campaign } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<{ campaigns: Campaign[] }>
 ) {
-  const { id } = req.query;
   const prisma = createPrismaClient();
-  const campaign = await prisma.campaign.findUnique({
+  const campaigns = await prisma.campaign.findMany({
     where: {
-      id: String(id),
+      status: "Approved",
     },
   });
+
   prisma.$disconnect();
 
-  if (!campaign) {
-    throw new Error("Campaign not found.");
-  }
-  res.status(200).json(campaign);
+  res.status(200).json({ campaigns });
 }

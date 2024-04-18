@@ -1,4 +1,3 @@
-// import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import {
   useAccount,

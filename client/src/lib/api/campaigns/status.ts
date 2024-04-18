@@ -7,7 +7,7 @@ const updateStatus = async ({
   status,
 }: {
   id: string;
-  status: "Waiting" | "Rejected" | "Approved";
+  status: "Waiting" | "Rejected" | "Approved" | "Published" | "Finished";
 }): Promise<Message> => {
   const res = await fetch("/api/campaign/status", {
     method: "POST",

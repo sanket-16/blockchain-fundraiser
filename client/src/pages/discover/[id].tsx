@@ -315,22 +315,37 @@ const CampaignPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="w-full flex border border-muted p-4 rounded-md gap-4 items-center hover:bg-secondary hover:cursor-pointer">
-                      <TbMessageCircleHeart size={40} />
-                      <div className="flex flex-col gap-2 ">
-                        <span className="font-bold ">Recent Donation</span>
-                        <div className="flex items-center gap-2 text-muted-foreground font-bold">
-                          <span>10 ETH</span>
-                          <BsDot />
-                          <span>Anonymous</span>
+                    {status === "success" && (
+                      <div className="w-full flex border border-muted p-4 rounded-md gap-4 items-center hover:bg-secondary hover:cursor-pointer">
+                        <TbMessageCircleHeart size={40} />
+                        <div className="flex flex-col gap-2 ">
+                          <span className="font-bold ">Recent Donation</span>
+                          <div className="flex items-center gap-2 text-muted-foreground font-bold">
+                            <span>
+                              {Number(
+                                data?.donations[data.donations.length - 1]
+                                  ?.amount
+                              )}
+                            </span>
+                            <BsDot />
+                            <span>
+                              {data?.donations[
+                                data.donations.length - 1
+                              ]?.donator.slice(0, 5)}
+                              .....
+                              {data?.donations[
+                                data.donations.length - 1
+                              ]?.donator.slice(-6, -1)}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </>
                 )}
               </div>
               <span className="text-muted-foreground px-4 font-bold text-sm">
-                Created on -----.
+                Created on {new Date(Number(data?.createdAt)).toLocaleString()}
               </span>
             </div>
           </div>

@@ -23,24 +23,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import updateStatus from "@/lib/api/campaigns/status";
 import { Button } from "./ui/button";
 
 const AdminCampaignCard = ({ campaign }: { campaign: Campaign }) => {
+  const queryClient = useQueryClient();
   const mutate = useMutation({
     mutationKey: ["update status of fundraiser"],
     mutationFn: updateStatus,
     onError: (err) => {
-      toast.remove("campaign_status_update");
+      toast.dismiss("campaign_status_update");
       toast.error("Campaign status update failed!");
       console.log(err);
+      queryClient.invalidateQueries(["get campaigns"]);
+      queryClient.invalidateQueries(["get waiting campaigns"]);
     },
     onSuccess: (data) => {
-      toast.remove("campaign_status_update");
+      toast.dismiss("campaign_status_update");
       toast.success("Campaign status update successfull!");
       console.log(data);
+      queryClient.invalidateQueries(["get campaigns"]);
+      queryClient.invalidateQueries(["get waiting campaigns"]);
     },
   });
   return (
@@ -93,11 +98,13 @@ const AdminCampaignCard = ({ campaign }: { campaign: Campaign }) => {
               <CarouselContent>
                 {campaign.images.map((image, index) => (
                   <CarouselItem key={index}>
-                    <img
-                      src={image}
-                      alt="Image"
-                      className="rounded-lg w-full "
-                    />
+                    <div className="text-center w-full flex items-center justify-center">
+                      <img
+                        src={image}
+                        alt="Image"
+                        className="rounded-lg w-auto text-center max-h-96 "
+                      />
+                    </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -113,11 +120,13 @@ const AdminCampaignCard = ({ campaign }: { campaign: Campaign }) => {
               <CarouselContent>
                 {campaign.proof.map((image, index) => (
                   <CarouselItem key={index}>
-                    <img
-                      src={image}
-                      alt="Image"
-                      className="rounded-lg w-full "
-                    />
+                    <div className="text-center w-full flex items-center justify-center">
+                      <img
+                        src={image}
+                        alt="Image"
+                        className="rounded-lg w-auto text-center max-h-96 "
+                      />
+                    </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -136,7 +145,9 @@ const AdminCampaignCard = ({ campaign }: { campaign: Campaign }) => {
               <Button
                 size="lg"
                 onClick={() => {
-                  toast.loading("campaign_status_update");
+                  toast.loading("Approving campaign...", {
+                    id: "campaign_status_update",
+                  });
                   mutate.mutateAsync({ id: campaign.id, status: "Approved" });
                 }}
                 disabled={mutate.status === "loading"}
@@ -147,7 +158,9 @@ const AdminCampaignCard = ({ campaign }: { campaign: Campaign }) => {
                 size="lg"
                 className="bg-red-500 text-white"
                 onClick={() => {
-                  toast.loading("campaign_status_update");
+                  toast.loading("Rejecting Campaign...", {
+                    id: "campaign_status_update",
+                  });
                   mutate.mutateAsync({ id: campaign.id, status: "Rejected" });
                 }}
                 disabled={mutate.status === "loading"}
